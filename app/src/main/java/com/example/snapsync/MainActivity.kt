@@ -117,7 +117,9 @@ fun MainScreen(viewModel: BottomBarViewModel = viewModel(), databaseViewModel: D
                                                     item.unselected
                                                 },
                                 contentDescription = null)
-                        })
+                        },
+                        label = {Text(text = item.label)}
+                    )
                 }
            }
        }
