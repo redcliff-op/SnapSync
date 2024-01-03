@@ -148,7 +148,7 @@ fun Contacts(viewModel: ContactScreenViewModel, databaseViewModel: DatabaseViewM
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         items(contactList){item ->
-            ContactCard(item, viewModel, databaseViewModel)
+            ContactCard(item, contactScreenViewModel = ContactScreenViewModel(), databaseViewModel)
         }
     }
 }
