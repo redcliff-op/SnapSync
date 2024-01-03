@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -190,7 +193,8 @@ fun Add(viewModel: AddScreenViewModel, databaseViewModel: DatabaseViewModel){
                     label = { Text(text = "Contact Name")},
                     placeholder = { Text(text = "Please Enter the name of the Contact")},
                     shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1
                 )
                 OutlinedTextField(
                     value = viewModel.number,
@@ -201,7 +205,8 @@ fun Add(viewModel: AddScreenViewModel, databaseViewModel: DatabaseViewModel){
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
-                    )
+                    ),
+                    maxLines = 1
                 )
             }
         }
@@ -240,9 +245,11 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 13.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp)
+                        .width(260.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.AccountCircle,
@@ -253,7 +260,9 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                     Text(
                         text = contactsEntity.name,
                         fontSize = 22.sp,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Row {
@@ -291,18 +300,21 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 61.dp),
+                        .padding(horizontal = 54.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
                         text = contactsEntity.number,
                         fontSize = 22.sp,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-                Spacer(modifier = Modifier.size(10.dp))
+                Spacer(modifier = Modifier.size(14.dp))
+                Divider(color = MaterialTheme.colorScheme.background)
                 Column(
-                    modifier = Modifier.padding(horizontal = 10.dp),
+                    modifier = Modifier.padding(horizontal = 2.dp),
                 ) {
                     Row (
                         horizontalArrangement = Arrangement.Center,
