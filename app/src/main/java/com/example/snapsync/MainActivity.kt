@@ -323,7 +323,10 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ){
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:${contactsEntity.number}"))
+                            ctx.startActivity(intent)
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.MailOutline,
                                 contentDescription = null,
