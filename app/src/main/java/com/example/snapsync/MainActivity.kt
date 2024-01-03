@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -225,7 +226,10 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
     Card(
         modifier = Modifier
             .fillMaxWidth(0.95f)
-            .padding(vertical = 7.dp)
+            .padding(vertical = 7.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
     ) {
         Column {
             Row(
@@ -243,13 +247,13 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                     Icon(
                         imageVector = Icons.Filled.AccountCircle,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                     Spacer(modifier = Modifier.size(15.dp))
                     Text(
                         text = contactsEntity.name,
                         fontSize = 22.sp,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Row {
@@ -267,7 +271,7 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                         Icon(
                             imageVector = Icons.Filled.Call,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     IconButton(
@@ -278,7 +282,7 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -293,7 +297,7 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                     Text(
                         text = contactsEntity.number,
                         fontSize = 22.sp,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.size(10.dp))
@@ -310,13 +314,13 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                             Icon(
                                 imageVector = Icons.Filled.Delete,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                         Text(
                             text = "Delete Contact",
                             fontSize = 20.sp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     Row (
@@ -330,13 +334,13 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                             Icon(
                                 imageVector = Icons.Filled.MailOutline,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                         Text(
                             text = "Send A Text Message",
                             fontSize = 20.sp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     Row (
@@ -347,13 +351,13 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                             Icon(
                                 imageVector = Icons.Filled.Edit,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                         Text(
                             text = "Edit Contact",
                             fontSize = 20.sp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
 
