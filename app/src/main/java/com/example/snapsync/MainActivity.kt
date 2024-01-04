@@ -5,20 +5,16 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,14 +28,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,12 +50,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -69,9 +65,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.snapsync.ViewModels.AddScreenViewModel
 import com.example.snapsync.ViewModels.DatabaseViewModel
 import com.example.snapsync.ViewModels.BottomBarViewModel
@@ -149,11 +148,23 @@ fun MainScreen(viewModel: BottomBarViewModel = viewModel(), databaseViewModel: D
                 Phone(viewModel = BottomBarViewModel())
             }
             composable(route = "Contacts"){
-                Contacts(viewModel = ContactScreenViewModel(), databaseViewModel)
+                Contacts(viewModel = ContactScreenViewModel(), databaseViewModel,navController)
             }
             composable(route = "Add"){
                 Add(viewModel = AddScreenViewModel(), databaseViewModel)
             }
+            composable(
+                route = "EditContactScreen/{name}/{number}",
+                arguments = listOf(
+                    navArgument("name") { type = NavType.StringType },
+                    navArgument("number") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val name = backStackEntry.arguments?.getString("name") ?: ""
+                val number = backStackEntry.arguments?.getString("number") ?: ""
+                EditContactScreen(navController, name, number, databaseViewModel)
+            }
+
         }
     }
 }
@@ -164,7 +175,7 @@ fun Phone(viewModel: BottomBarViewModel){
 }
 
 @Composable
-fun Contacts(viewModel: ContactScreenViewModel, databaseViewModel: DatabaseViewModel){
+fun Contacts(viewModel: ContactScreenViewModel, databaseViewModel: DatabaseViewModel, navController: NavController){
     val contactList by databaseViewModel.contactList.collectAsState(initial = emptyList())
     LazyColumn(
         modifier = Modifier
@@ -173,7 +184,7 @@ fun Contacts(viewModel: ContactScreenViewModel, databaseViewModel: DatabaseViewM
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         items(contactList){item ->
-            ContactCard(item, contactScreenViewModel = ContactScreenViewModel(), databaseViewModel)
+            ContactCard(item, ContactScreenViewModel(), databaseViewModel,navController)
         }
     }
 }
@@ -242,7 +253,7 @@ fun Add(viewModel: AddScreenViewModel, databaseViewModel: DatabaseViewModel){
 }
 
 @Composable
-fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactScreenViewModel,databaseViewModel: DatabaseViewModel) {
+fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactScreenViewModel,databaseViewModel: DatabaseViewModel,navController: NavController) {
     val ctx = LocalContext.current
     Card(
         modifier = Modifier
@@ -375,7 +386,9 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ){
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            navController.navigate("EditContactScreen/${contactsEntity.name}/${contactsEntity.number}")
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.Edit,
                                 contentDescription = null,
@@ -391,6 +404,63 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
 
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun EditContactScreen(navController: NavController,name:String,number: String,databaseViewModel: DatabaseViewModel){
+    var ctx = LocalContext.current
+    var EditedName by remember {
+        mutableStateOf(name)
+    }
+    var EditedNumber by remember {
+        mutableStateOf(number)
+    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Text(
+                    text = "Edit Contact Details",
+                    fontSize = 30.sp
+                )
+                OutlinedTextField(
+                    value = EditedName,
+                    onValueChange = {newText -> EditedName = newText},
+                    shape = RoundedCornerShape(20.dp)
+                )
+                OutlinedTextField(
+                    value = EditedNumber,
+                    onValueChange = {newText -> EditedNumber = newText},
+                    shape = RoundedCornerShape(20.dp)
+                )
+            }
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth(0.9f),
+            onClick = {
+            databaseViewModel.deleteContact(ContactsEntity(number,name))
+            databaseViewModel.addContact(ContactsEntity(EditedNumber,EditedName))
+            Toast.makeText(ctx,"Updated Successfully",Toast.LENGTH_SHORT).show()
+            navController.navigate("Contacts")
+        },) {
+            Text(
+                text = "Update",
+                fontSize = 25.sp,
+            )
         }
     }
 }
