@@ -115,7 +115,10 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(viewModel: BottomBarViewModel = viewModel(), databaseViewModel: DatabaseViewModel){
+fun MainScreen(
+    viewModel: BottomBarViewModel = viewModel(),
+    databaseViewModel: DatabaseViewModel
+){
     val bottomBarList = viewModel.initialiseBottomBarList()
     val navController = rememberNavController()
     Scaffold (
@@ -148,7 +151,7 @@ fun MainScreen(viewModel: BottomBarViewModel = viewModel(), databaseViewModel: D
                 Phone(viewModel = BottomBarViewModel())
             }
             composable(route = "Contacts"){
-                Contacts(viewModel = ContactScreenViewModel(), databaseViewModel,navController)
+                Contacts(databaseViewModel,navController)
             }
             composable(route = "Add"){
                 Add(viewModel = AddScreenViewModel(), databaseViewModel)
@@ -170,12 +173,17 @@ fun MainScreen(viewModel: BottomBarViewModel = viewModel(), databaseViewModel: D
 }
 
 @Composable
-fun Phone(viewModel: BottomBarViewModel){
+fun Phone(
+    viewModel: BottomBarViewModel
+){
 
 }
 
 @Composable
-fun Contacts(viewModel: ContactScreenViewModel, databaseViewModel: DatabaseViewModel, navController: NavController){
+fun Contacts(
+    databaseViewModel: DatabaseViewModel,
+    navController: NavController
+){
     val contactList by databaseViewModel.contactList.collectAsState(initial = emptyList())
     LazyColumn(
         modifier = Modifier
@@ -190,7 +198,10 @@ fun Contacts(viewModel: ContactScreenViewModel, databaseViewModel: DatabaseViewM
 }
 
 @Composable
-fun Add(viewModel: AddScreenViewModel, databaseViewModel: DatabaseViewModel){
+fun Add(
+    viewModel: AddScreenViewModel,
+    databaseViewModel: DatabaseViewModel
+){
     val ctx = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -253,7 +264,12 @@ fun Add(viewModel: AddScreenViewModel, databaseViewModel: DatabaseViewModel){
 }
 
 @Composable
-fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactScreenViewModel,databaseViewModel: DatabaseViewModel,navController: NavController) {
+fun ContactCard(
+    contactsEntity: ContactsEntity,
+    contactScreenViewModel: ContactScreenViewModel,
+    databaseViewModel: DatabaseViewModel,
+    navController: NavController
+) {
     val ctx = LocalContext.current
     Card(
         modifier = Modifier
@@ -409,7 +425,12 @@ fun ContactCard(contactsEntity: ContactsEntity, contactScreenViewModel: ContactS
 }
 
 @Composable
-fun EditContactScreen(navController: NavController,name:String,number: String,databaseViewModel: DatabaseViewModel){
+fun EditContactScreen(
+    navController: NavController,
+    name:String,
+    number: String,
+    databaseViewModel: DatabaseViewModel
+){
     var ctx = LocalContext.current
     var EditedName by remember {
         mutableStateOf(name)
