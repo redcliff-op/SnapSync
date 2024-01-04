@@ -185,13 +185,14 @@ fun Contacts(
     navController: NavController
 ){
     val contactList by databaseViewModel.contactList.collectAsState(initial = emptyList())
+    var sortedContactList = contactList.sortedBy { it.name }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 13.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        items(contactList){item ->
+        items(sortedContactList){item ->
             ContactCard(item, ContactScreenViewModel(), databaseViewModel,navController)
         }
     }
