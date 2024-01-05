@@ -12,7 +12,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,10 +37,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -189,7 +189,7 @@ fun Phone(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(bottom = 100.dp),
+            .padding(bottom = 110.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ){
@@ -197,6 +197,7 @@ fun Phone(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .height(70.dp),
+            elevation = CardDefaults.elevatedCardElevation(20.dp)
         ) {
             Row (
                 modifier = Modifier.fillMaxHeight(),
@@ -237,7 +238,8 @@ fun Phone(
         Spacer(modifier = Modifier.size(20.dp))
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
+                .fillMaxWidth(0.95f),
+                elevation = CardDefaults.elevatedCardElevation(20.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -253,8 +255,11 @@ fun Phone(
                     ) {
                         for (j in 1..3) {
                             val digit = (i - 1) * 3 + j
-                            Button(onClick = { viewModel.phoneNo += digit.toString() }) {
-                                Text(text = digit.toString(), fontSize = 50.sp)
+                            ElevatedButton(
+                                elevation = ButtonDefaults.elevatedButtonElevation(15.dp),
+                                onClick = { viewModel.phoneNo += digit.toString() }
+                            ) {
+                                    Text(text = digit.toString(), fontSize = 50.sp)
                             }
                         }
                     }
@@ -265,25 +270,31 @@ fun Phone(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     listOf("*", "0", "#").forEach { symbol ->
-                        Button(onClick = { viewModel.phoneNo += symbol }) {
+                        ElevatedButton(
+                            elevation = ButtonDefaults.elevatedButtonElevation(15.dp),
+                            onClick = { viewModel.phoneNo += symbol }
+                        ) {
                             Text(text = symbol, fontSize = 50.sp)
                         }
                     }
                 }
                 Spacer(modifier = Modifier.size(20.dp))
-                Button(onClick = {
-                    val REQUEST_PHONE_CALL = 1
-                    val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:${viewModel.phoneNo}"))
-                    if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(ctx as Activity, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL)
-                    } else {
-                        ctx.startActivity(intent)
-                    }
+                ElevatedButton(
+                    elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
+                    onClick = {
+                        val REQUEST_PHONE_CALL = 1
+                        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:${viewModel.phoneNo}"))
+                        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(ctx as Activity, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL)
+                        } else {
+                            ctx.startActivity(intent)
+                        }
                 }) {
-                    Image(
+                    Icon(
                         imageVector = Icons.Filled.Call,
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(40.dp),
+
                     )
                 }
             }
@@ -326,6 +337,7 @@ fun Add(
                 .fillMaxWidth()
                 .height(300.dp)
                 .padding(20.dp),
+            elevation = CardDefaults.elevatedCardElevation(20.dp)
         ){
             Column (
                 modifier = Modifier
@@ -361,7 +373,8 @@ fun Add(
                 )
             }
         }
-        Button(
+        ElevatedButton(
+            elevation = ButtonDefaults.elevatedButtonElevation(20.dp),
             onClick = {
                 databaseViewModel.addContact(ContactsEntity(viewModel.number, viewModel.name))
                 Toast.makeText(ctx,"Added Successfully",Toast.LENGTH_SHORT).show()
@@ -390,7 +403,8 @@ fun ContactCard(
             .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+        ),
+        elevation = CardDefaults.elevatedCardElevation(15.dp)
     ) {
         Spacer(modifier = Modifier.size(10.dp))
         Column {
@@ -562,7 +576,8 @@ fun EditContactScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
-                .padding(20.dp)
+                .padding(20.dp),
+            elevation = CardDefaults.elevatedCardElevation(20.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -585,14 +600,16 @@ fun EditContactScreen(
                 )
             }
         }
-        Button(
+        ElevatedButton(
             modifier = Modifier.fillMaxWidth(0.9f),
+            elevation = ButtonDefaults.elevatedButtonElevation(20.dp),
             onClick = {
-            databaseViewModel.deleteContact(ContactsEntity(number,name))
-            databaseViewModel.addContact(ContactsEntity(EditedNumber,EditedName))
-            Toast.makeText(ctx,"Updated Successfully",Toast.LENGTH_SHORT).show()
-            navController.navigate("Contacts")
-        },) {
+                databaseViewModel.deleteContact(ContactsEntity(number, name))
+                databaseViewModel.addContact(ContactsEntity(EditedNumber, EditedName))
+                Toast.makeText(ctx, "Updated Successfully", Toast.LENGTH_SHORT).show()
+                navController.navigate("Contacts")
+            },
+        ) {
             Text(
                 text = "Update",
                 fontSize = 25.sp,
