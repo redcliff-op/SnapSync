@@ -189,9 +189,9 @@ fun Phone(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(bottom = 70.dp),
+            .padding(bottom = 100.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.Bottom
     ){
         Card(
             modifier = Modifier
@@ -234,6 +234,7 @@ fun Phone(
                 }
             }
         }
+        Spacer(modifier = Modifier.size(20.dp))
         Card(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
@@ -269,23 +270,23 @@ fun Phone(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.size(20.dp))
+                Button(onClick = {
+                    val REQUEST_PHONE_CALL = 1
+                    val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:${viewModel.phoneNo}"))
+                    if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ctx as Activity, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL)
+                    } else {
+                        ctx.startActivity(intent)
+                    }
+                }) {
+                    Image(
+                        imageVector = Icons.Filled.Call,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
             }
-        }
-
-        Button(onClick = {
-            val REQUEST_PHONE_CALL = 1
-            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:${viewModel.phoneNo}"))
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(ctx as Activity, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL)
-            } else {
-                ctx.startActivity(intent)
-            }
-        }) {
-            Image(
-                imageVector = Icons.Filled.Call,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp)
-            )
         }
     }
 }
