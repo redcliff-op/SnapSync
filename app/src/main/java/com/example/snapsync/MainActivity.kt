@@ -11,10 +11,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -75,6 +78,7 @@ import com.example.snapsync.ViewModels.AddScreenViewModel
 import com.example.snapsync.ViewModels.DatabaseViewModel
 import com.example.snapsync.ViewModels.BottomBarViewModel
 import com.example.snapsync.ViewModels.ContactScreenViewModel
+import com.example.snapsync.ViewModels.PhoneScreenViewModel
 import com.example.snapsync.repository.Repository
 import com.example.snapsync.room.ContactsDB
 import com.example.snapsync.room.ContactsEntity
@@ -148,7 +152,7 @@ fun MainScreen(
     ){
         NavHost(navController = navController, startDestination = "Phone"){
             composable(route = "Phone"){
-                Phone(viewModel = BottomBarViewModel())
+                Phone(viewModel = PhoneScreenViewModel())
             }
             composable(route = "Contacts"){
                 Contacts(databaseViewModel,navController)
@@ -174,9 +178,113 @@ fun MainScreen(
 
 @Composable
 fun Phone(
-    viewModel: BottomBarViewModel
+    viewModel: PhoneScreenViewModel
 ){
+    var ctx = LocalContext.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(bottom = 70.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .height(70.dp),
+        ) {
+            Row (
+                modifier = Modifier.fillMaxHeight(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Row (
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .width(300.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = viewModel.phoneNo,
+                        fontSize = 40.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ){
+                    IconButton(onClick = {viewModel.phoneNo = viewModel.phoneNo.dropLast(1)}) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp)
+                        )
+                    }
+                }
+            }
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                for (i in 1..3) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        for (j in 1..3) {
+                            val digit = (i - 1) * 3 + j
+                            Button(onClick = { viewModel.phoneNo += digit.toString() }) {
+                                Text(text = digit.toString(), fontSize = 50.sp)
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.size(10.dp))
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    listOf("*", "0", "#").forEach { symbol ->
+                        Button(onClick = { viewModel.phoneNo += symbol }) {
+                            Text(text = symbol, fontSize = 50.sp)
+                        }
+                    }
+                }
+            }
+        }
 
+        Button(onClick = {
+            val REQUEST_PHONE_CALL = 1
+            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:${viewModel.phoneNo}"))
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(ctx as Activity, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL)
+            } else {
+                ctx.startActivity(intent)
+            }
+        }) {
+            Image(
+                imageVector = Icons.Filled.Call,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+    }
 }
 
 @Composable
