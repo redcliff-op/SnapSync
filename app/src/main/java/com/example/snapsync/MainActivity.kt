@@ -121,7 +121,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     viewModel: BottomBarViewModel = viewModel(),
-    databaseViewModel: DatabaseViewModel
+    databaseViewModel: DatabaseViewModel,
+    phoneScreenViewModel: PhoneScreenViewModel = viewModel(),
+    addScreenViewModel: AddScreenViewModel = viewModel()
 ){
     val bottomBarList = viewModel.initialiseBottomBarList()
     val navController = rememberNavController()
@@ -152,13 +154,13 @@ fun MainScreen(
     ){
         NavHost(navController = navController, startDestination = "Phone"){
             composable(route = "Phone"){
-                Phone(viewModel = PhoneScreenViewModel())
+                Phone(phoneScreenViewModel)
             }
             composable(route = "Contacts"){
                 Contacts(databaseViewModel,navController)
             }
             composable(route = "Add"){
-                Add(viewModel = AddScreenViewModel(), databaseViewModel)
+                Add(addScreenViewModel, databaseViewModel)
             }
             composable(
                 route = "EditContactScreen/{name}/{number}",
