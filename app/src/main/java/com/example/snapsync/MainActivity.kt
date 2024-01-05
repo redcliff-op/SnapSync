@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -451,26 +452,26 @@ fun ContactCard(
                     }
                 }
             }
-            if (contactScreenViewModel.expanded) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 54.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Text(
-                        text = contactsEntity.number,
-                        fontSize = 22.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                Spacer(modifier = Modifier.size(14.dp))
-                Divider(color = MaterialTheme.colorScheme.background)
+            AnimatedVisibility(visible = contactScreenViewModel.expanded) {
                 Column(
                     modifier = Modifier.padding(horizontal = 2.dp),
                 ) {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 50.dp)
+                    ){
+                        Text(
+                            text = contactsEntity.number,
+                            fontSize = 22.sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(15.dp))
+                    Divider(color = MaterialTheme.colorScheme.background)
+                    Spacer(modifier = Modifier.size(5.dp))
                     Row (
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
