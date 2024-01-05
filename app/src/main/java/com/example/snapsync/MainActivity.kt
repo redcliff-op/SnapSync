@@ -299,7 +299,7 @@ fun Contacts(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 13.dp),
+            .padding(top = 10.dp, bottom = 80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         items(sortedContactList){item ->
@@ -385,11 +385,12 @@ fun ContactCard(
     Card(
         modifier = Modifier
             .fillMaxWidth(0.95f)
-            .padding(vertical = 7.dp),
+            .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
         )
     ) {
+        Spacer(modifier = Modifier.size(10.dp))
         Column {
             Row(
                 modifier = Modifier
@@ -532,6 +533,7 @@ fun ContactCard(
                 }
             }
         }
+        Spacer(modifier = Modifier.size(10.dp))
     }
 }
 
