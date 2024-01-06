@@ -454,13 +454,7 @@ fun ContactCard(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 10.dp)
-                    .clickable(
-                        enabled = true,
-                        onClick = {
-                            contactScreenViewModel.expanded = !contactScreenViewModel.expanded
-                        }
-                    ),
+                    .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
