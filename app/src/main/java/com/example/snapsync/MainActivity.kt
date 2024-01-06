@@ -129,6 +129,7 @@ fun MainScreen(
 ){
     val bottomBarList = viewModel.initialiseBottomBarList()
     val navController = rememberNavController()
+    val contactList by databaseViewModel.contactList.collectAsState(initial = emptyList())
     Scaffold (
        bottomBar = {
            NavigationBar{
@@ -159,10 +160,10 @@ fun MainScreen(
                 Phone(phoneScreenViewModel)
             }
             composable(route = "Contacts"){
-                Contacts(databaseViewModel,navController)
+                Contacts(databaseViewModel,navController,contactList)
             }
             composable(route = "Add"){
-                Add(addScreenViewModel, databaseViewModel)
+                Add(addScreenViewModel, databaseViewModel,contactList)
             }
             composable(
                 route = "EditContactScreen/{name}/{number}",
@@ -306,10 +307,10 @@ fun Phone(
 @Composable
 fun Contacts(
     databaseViewModel: DatabaseViewModel,
-    navController: NavController
+    navController: NavController,
+    list: List<ContactsEntity>
 ){
-    val contactList by databaseViewModel.contactList.collectAsState(initial = emptyList())
-    var sortedContactList = contactList.sortedBy { it.name }
+    val sortedContactList = list.sortedBy { it.name }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -325,7 +326,8 @@ fun Contacts(
 @Composable
 fun Add(
     viewModel: AddScreenViewModel,
-    databaseViewModel: DatabaseViewModel
+    databaseViewModel: DatabaseViewModel,
+    list: List<ContactsEntity>
 ){
     val ctx = LocalContext.current
     Column(
@@ -377,8 +379,13 @@ fun Add(
         ElevatedButton(
             elevation = ButtonDefaults.elevatedButtonElevation(20.dp),
             onClick = {
-                databaseViewModel.addContact(ContactsEntity(viewModel.number, viewModel.name))
-                Toast.makeText(ctx,"Added Successfully",Toast.LENGTH_SHORT).show()
+                var entity = ContactsEntity(viewModel.number,viewModel.name)
+                if(!viewModel.numberExists(list,entity)){
+                    databaseViewModel.addContact(entity)
+                    Toast.makeText(ctx,"Added Successfully",Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(ctx,"Contact with the same Number Already Exists",Toast.LENGTH_SHORT).show()
+                }
             },
             modifier = Modifier.fillMaxWidth(0.9f)
         ) {
