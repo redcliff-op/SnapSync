@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -38,11 +39,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -81,6 +86,7 @@ import com.example.snapsync.ViewModels.DatabaseViewModel
 import com.example.snapsync.ViewModels.BottomBarViewModel
 import com.example.snapsync.ViewModels.ContactScreenViewModel
 import com.example.snapsync.ViewModels.PhoneScreenViewModel
+import com.example.snapsync.ViewModels.SearchScreenViewModel
 import com.example.snapsync.repository.Repository
 import com.example.snapsync.room.ContactsDB
 import com.example.snapsync.room.ContactsEntity
@@ -125,7 +131,8 @@ fun MainScreen(
     viewModel: BottomBarViewModel = viewModel(),
     databaseViewModel: DatabaseViewModel,
     phoneScreenViewModel: PhoneScreenViewModel = viewModel(),
-    addScreenViewModel: AddScreenViewModel = viewModel()
+    addScreenViewModel: AddScreenViewModel = viewModel(),
+    searchScreenViewModel: SearchScreenViewModel = viewModel()
 ){
     val bottomBarList = viewModel.initialiseBottomBarList()
     val navController = rememberNavController()
@@ -176,7 +183,9 @@ fun MainScreen(
                 val number = backStackEntry.arguments?.getString("number") ?: ""
                 EditContactScreen(navController, name, number, databaseViewModel)
             }
-
+            composable(route = "SearchScreen"){
+                SearchScreen(searchScreenViewModel, contactList, databaseViewModel,navController)
+            }
         }
     }
 }
@@ -311,14 +320,40 @@ fun Contacts(
     list: List<ContactsEntity>
 ){
     val sortedContactList = list.sortedBy { it.name }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 10.dp, bottom = 80.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        items(sortedContactList){item ->
-            ContactCard(item, ContactScreenViewModel(), databaseViewModel,navController)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Spacer(modifier = Modifier.size(20.dp))
+        Row (
+            modifier = Modifier.fillMaxWidth(0.9f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = "Search Contacts",
+                fontSize = 30.sp
+            )
+            ElevatedButton(
+                elevation = ButtonDefaults.elevatedButtonElevation(20.dp),
+                onClick = {
+                    navController.navigate("SearchScreen")
+                }) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null)
+            }
+        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 10.dp, bottom = 80.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            items(sortedContactList){item ->
+                ContactCard(item, ContactScreenViewModel(), databaseViewModel,navController)
+            }
         }
     }
 }
@@ -656,6 +691,52 @@ fun EditContactScreen(
                 text = "Update",
                 fontSize = 25.sp,
             )
+        }
+    }
+}
+
+@Composable
+fun SearchScreen(
+    viewModel: SearchScreenViewModel,
+    contactsList: List<ContactsEntity>,
+    databaseViewModel: DatabaseViewModel,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = viewModel.searchQuery,
+            onValueChange = {
+                viewModel.searchQuery = it
+                viewModel.filterContacts(contactsList, it)
+            },
+            label = { Text("Search contacts") },
+            trailingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search,
+            ),
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(bottom = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            singleLine = true
+        )
+        val filteredContacts by viewModel.filteredContactsState.collectAsState()
+        if (viewModel.searchQuery.isNotEmpty()) {
+            LazyColumn {
+                items(items = filteredContacts) { item ->
+                    ContactCard(
+                        contactsEntity = item,
+                        contactScreenViewModel = ContactScreenViewModel(),
+                        databaseViewModel = databaseViewModel,
+                        navController = navController
+                    )
+                }
+            }
         }
     }
 }
