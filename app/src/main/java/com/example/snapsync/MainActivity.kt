@@ -12,6 +12,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -411,7 +412,13 @@ fun ContactCard(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 10.dp)
+                    .clickable(
+                        enabled = true,
+                        onClick = {
+                            contactScreenViewModel.expanded = !contactScreenViewModel.expanded
+                        }
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -488,18 +495,24 @@ fun ContactCard(
                     Divider(color = MaterialTheme.colorScheme.background)
                     Spacer(modifier = Modifier.size(5.dp))
                     Row (
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
-                    ){
-                        IconButton(onClick = {
-                            databaseViewModel.deleteContact(contactsEntity)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onBackground
+                        modifier = Modifier
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    databaseViewModel.deleteContact(contactsEntity)
+                                }
                             )
-                        }
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                    ){
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.size(14.dp))
                         Text(
                             text = "Delete Contact",
                             fontSize = 20.sp,
@@ -507,19 +520,28 @@ fun ContactCard(
                         )
                     }
                     Row (
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
-                    ){
-                        IconButton(onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:${contactsEntity.number}"))
-                            ctx.startActivity(intent)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.MailOutline,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onBackground
+                        modifier = Modifier
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    val intent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("sms:${contactsEntity.number}")
+                                    )
+                                    ctx.startActivity(intent)
+                                }
                             )
-                        }
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                    ){
+                        Icon(
+                            imageVector = Icons.Filled.MailOutline,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.size(14.dp))
                         Text(
                             text = "Send A Text Message",
                             fontSize = 20.sp,
@@ -527,18 +549,24 @@ fun ContactCard(
                         )
                     }
                     Row (
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
-                    ){
-                        IconButton(onClick = {
-                            navController.navigate("EditContactScreen/${contactsEntity.name}/${contactsEntity.number}")
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onBackground
+                        modifier = Modifier
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    navController.navigate("EditContactScreen/${contactsEntity.name}/${contactsEntity.number}")
+                                }
                             )
-                        }
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                    ){
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.size(14.dp))
                         Text(
                             text = "Edit Contact",
                             fontSize = 20.sp,
