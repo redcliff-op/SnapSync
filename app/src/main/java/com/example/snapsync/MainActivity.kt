@@ -357,7 +357,7 @@ fun Add(
                     placeholder = { Text(text = "Please Enter the name of the Contact")},
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    maxLines = 1
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = viewModel.number,
@@ -369,7 +369,7 @@ fun Add(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
-                    maxLines = 1
+                    singleLine = true
                 )
             }
         }
@@ -591,12 +591,19 @@ fun EditContactScreen(
                 OutlinedTextField(
                     value = EditedName,
                     onValueChange = {newText -> EditedName = newText},
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth(0.9f),
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = EditedNumber,
                     onValueChange = {newText -> EditedNumber = newText},
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth(0.9f),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    )
                 )
             }
         }
