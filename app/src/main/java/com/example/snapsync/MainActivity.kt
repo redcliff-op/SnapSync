@@ -91,6 +91,7 @@ import com.example.snapsync.repository.Repository
 import com.example.snapsync.room.ContactsDB
 import com.example.snapsync.room.ContactsEntity
 import com.example.snapsync.ui.theme.SnapSyncTheme
+import kotlinx.coroutines.runBlocking
 
 
 class MainActivity : ComponentActivity() {
@@ -414,13 +415,9 @@ fun Add(
         ElevatedButton(
             elevation = ButtonDefaults.elevatedButtonElevation(20.dp),
             onClick = {
-                var entity = ContactsEntity(viewModel.number,viewModel.name)
-                if(!viewModel.numberExists(list,entity)){
-                    databaseViewModel.addContact(entity)
-                    Toast.makeText(ctx,"Added Successfully",Toast.LENGTH_SHORT).show()
-                }else{
-                    Toast.makeText(ctx,"Contact with the same Number Already Exists",Toast.LENGTH_SHORT).show()
-                }
+                var entity = ContactsEntity(0,viewModel.number,viewModel.name)
+                databaseViewModel.addContact(entity)
+                Toast.makeText(ctx,"Added Successfully",Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.fillMaxWidth(0.9f)
         ) {
@@ -625,12 +622,8 @@ fun EditContactScreen(
     databaseViewModel: DatabaseViewModel
 ){
     var ctx = LocalContext.current
-    var EditedName by remember {
-        mutableStateOf(name)
-    }
-    var EditedNumber by remember {
-        mutableStateOf(number)
-    }
+    var EditedName by remember { mutableStateOf(name) }
+    var EditedNumber by remember { mutableStateOf(number) }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -675,10 +668,16 @@ fun EditContactScreen(
             modifier = Modifier.fillMaxWidth(0.9f),
             elevation = ButtonDefaults.elevatedButtonElevation(20.dp),
             onClick = {
-                databaseViewModel.deleteContact(ContactsEntity(number, name))
-                databaseViewModel.addContact(ContactsEntity(EditedNumber, EditedName))
-                Toast.makeText(ctx, "Updated Successfully", Toast.LENGTH_SHORT).show()
-                navController.navigate("Contacts")
+                val existingContact = runBlocking {
+                    databaseViewModel.getContactByNameAndNumber(name, number)
+                }
+                existingContact?.let {
+                    it.name = EditedName
+                    it.number = EditedNumber
+                    databaseViewModel.updateContact(it)
+                    Toast.makeText(ctx, "Updated Successfully", Toast.LENGTH_SHORT).show()
+                    navController.navigate("Contacts")
+                }
             },
         ) {
             Text(

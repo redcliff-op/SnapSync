@@ -13,6 +13,14 @@ class DatabaseViewModel(val repository: Repository): ViewModel() {
         }
     }
     var contactList = repository.getAllContactsFromRoom()
+    suspend fun getContactByNameAndNumber(name: String, number: String): ContactsEntity? {
+        return repository.getContactByNameAndNumber(name, number)
+    }
+    fun updateContact(contactEntity: ContactsEntity) {
+        viewModelScope.launch {
+            repository.updateContactInRoom(contactEntity)
+        }
+    }
     fun deleteContact(contactsEntity: ContactsEntity){
         viewModelScope.launch {
             repository.deleteContactFromRoom(contactsEntity)
